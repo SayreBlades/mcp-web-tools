@@ -18,37 +18,68 @@ This is useful when you want your code-generation tool to make web requests dire
 ## Requirements
 
 - Python 3.13+
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+- [uv](https://github.com/astral-sh/uv)
 
 ## Installation
+
+### Quick Install (Recommended)
 
 ```bash
 # Clone the repository
 git clone <repo-url>
 cd mcp-web-tools
 
-# Install dependencies with uv
-uv sync
-
-# Or with pip
-pip install -e .
+# Install globally and configure Claude Code
+make install
 ```
 
-## Usage
+This will:
+1. Install `mcp-web-tools` as a global executable via `uv tool install`
+2. Update `~/.claude/mcp.json` with the MCP server configuration
+3. The executable will be available at `~/.local/bin/mcp-web-tools`
 
-### Running the Server Directly
+Restart Claude Code after installation.
+
+### Manual Installation
 
 ```bash
-# With uv
-uv run mcp-web-tools
+# Install dependencies
+uv sync
 
-# Or if installed with pip
-mcp-web-tools
+# Run directly from project
+uv run mcp-web-tools
 ```
 
-### Registering with Claude Code
+## Makefile Targets
 
-Add the server to your Claude Code MCP configuration. Create or edit `.mcp.json` in your project directory:
+| Target | Description |
+|--------|-------------|
+| `make install` | Install globally and configure Claude Code |
+| `make uninstall` | Remove the global installation |
+| `make test` | Run tests with pytest |
+| `make clean` | Remove build artifacts |
+
+## Claude Code Configuration
+
+After running `make install`, your `~/.claude/mcp.json` will contain:
+
+```json
+{
+  "mcpServers": {
+    "web-tools": {
+      "command": "mcp-web-tools"
+    }
+  }
+}
+```
+
+The tools will be available in Claude Code as:
+- `mcp__web-tools__web_search`
+- `mcp__web-tools__web_fetch`
+
+### Alternative: Project-Local Configuration
+
+If you prefer to run from the project directory, create `.mcp.json` in your project:
 
 ```json
 {
@@ -65,22 +96,6 @@ Add the server to your Claude Code MCP configuration. Create or edit `.mcp.json`
   }
 }
 ```
-
-Or for a global installation, edit `~/.claude/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "web-tools": {
-      "command": "mcp-web-tools"
-    }
-  }
-}
-```
-
-After adding the configuration, restart Claude Code. The tools will be available as:
-- `mcp__web-tools__web_search`
-- `mcp__web-tools__web_fetch`
 
 ## Tool Reference
 
@@ -135,14 +150,10 @@ This guide covers the basics of creating an MCP server...
 ### Running Tests
 
 ```bash
-# Run all tests
-uv run pytest
+make test
 
-# Run with verbose output
+# Or directly
 uv run pytest -v
-
-# Run a specific test file
-uv run pytest tests/test_tools.py
 ```
 
 ### Project Structure
@@ -157,7 +168,7 @@ mcp-web-tools/
   tests/
     test_tools.py       # Unit tests
   pyproject.toml        # Project configuration
-  .mcp.json             # Local MCP registration example
+  Makefile              # Install/uninstall automation
 ```
 
 ## Dependencies
