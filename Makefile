@@ -8,15 +8,14 @@ install:
 	@echo "Installing $(SCRIPT) to $(BINDIR)..."
 	@mkdir -p $(BINDIR)
 	@uv tool install --force --quiet .
-	@echo "Updating Claude global MCP configuration..."
-	@mkdir -p $(HOME)/.claude
-	@echo '{"mcpServers":{"web-tools":{"command":"$(SCRIPT)"}}}' | python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin), indent=2))" > $(HOME)/.claude/mcp.json
+	@echo "Registering MCP server with Claude Code..."
+	@claude mcp add --scope user web-tools $(SCRIPT)
 	@echo "Done. Restart Claude Code to use the new MCP server."
 
 uninstall:
 	@echo "Uninstalling $(SCRIPT)..."
-	@uv tool uninstall mcp-web-tool 2>/dev/null || true
-	@echo "Note: Claude MCP config at ~/.claude/mcp.json left unchanged."
+	@uv tool uninstall mcp-web-tools 2>/dev/null || true
+	@claude mcp remove --scope user web-tools 2>/dev/null || true
 	@echo "Done."
 
 test:

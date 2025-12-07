@@ -35,7 +35,7 @@ make install
 
 This will:
 1. Install `mcp-web-tools` as a global executable via `uv tool install`
-2. Update `~/.claude/mcp.json` with the MCP server configuration
+2. Register the MCP server with Claude Code using `claude mcp add`
 3. The executable will be available at `~/.local/bin/mcp-web-tools`
 
 Restart Claude Code after installation.
@@ -61,40 +61,34 @@ uv run mcp-web-tools
 
 ## Claude Code Configuration
 
-After running `make install`, your `~/.claude/mcp.json` will contain:
+After running `make install`, you can verify the registration:
 
-```json
-{
-  "mcpServers": {
-    "web-tools": {
-      "command": "mcp-web-tools"
-    }
-  }
-}
+```bash
+claude mcp list
 ```
 
 The tools will be available in Claude Code as:
 - `mcp__web-tools__web_search`
 - `mcp__web-tools__web_fetch`
 
-### Alternative: Project-Local Configuration
+### Manual Registration
 
-If you prefer to run from the project directory, create `.mcp.json` in your project:
+If you prefer to register manually:
 
-```json
-{
-  "mcpServers": {
-    "web-tools": {
-      "command": "uv",
-      "args": [
-        "run",
-        "--directory",
-        "/path/to/mcp-web-tools",
-        "mcp-web-tools"
-      ]
-    }
-  }
-}
+```bash
+# User-wide (available in all projects)
+claude mcp add --scope user web-tools mcp-web-tools
+
+# Project-local (only current project)
+claude mcp add --scope project web-tools mcp-web-tools
+```
+
+### Alternative: Run from Project Directory
+
+For development, you can register to run directly from the source:
+
+```bash
+claude mcp add --scope project web-tools uv run --directory /path/to/mcp-web-tools mcp-web-tools
 ```
 
 ## Tool Reference
